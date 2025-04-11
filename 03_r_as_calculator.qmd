@@ -1,0 +1,110 @@
+---
+title: "R as calculator"
+format: html
+editor: visual
+---
+
+<https://practical-stats-med-r.netlify.app/calculations>
+
+# 3.1 Arithmetic operations in R 
+
+```{r}
+100 + 1
+```
+
+```{r}
+1 + 1
+2 - 1
+2 * 3
+5 / 2 
+5 %/% 2  # integer division
+5 %% 2   # modulo (remainder)
+5 ^ 2    # exponent
+5 ** 2
+```
+
+Order of operations :
+
+-   Parentheses
+
+-   Exponents
+
+-   Multiplication / Division
+
+-   Addition / Subtraction
+
+```{r}
+3 + 5 * 2
+```
+
+```{r}
+3 / 5 * 2
+```
+
+## 3.1.1 Parentheses
+
+```{r}
+(3 + 5) * 2
+```
+
+```{r}
+(3 + (5 * (2 ^ 2))) # hard to read
+3 + 5 * 2 ^ 2       # clear, if we remember the rules
+3 + 5 * (2 ^ 2)     # if we forget some rules, this might help
+```
+
+# 3.2 Relational operators in R
+
+```{r}
+2 < 1  # less than
+1 > 0  # greater than
+1 == 1  # equal to (double equal sign for equality)
+1 <= 1  # less than or equal to
+-9 >= -3 # greater than or equal to
+1 != 2  # not equal to (inequality)
+```
+
+# 3.3 Scientific notation
+
+```{r}
+0.05         # the number is greater than 0.001 
+0.0005       # the number is less than 0.001 
+```
+
+# 3.4 Special values in R
+
+## 3.4.1 Missing  values (NA)
+
+```{r}
+1 + NA
+```
+
+```{r}
+(3 + 5) / NA
+```
+
+## 3.4.2 Infinitive (-Inf or Inf)
+
+```{r}
+1 / 0
+```
+
+```{r}
+Inf + 1000
+```
+
+## 3.4.3 Not a number (NaN)
+
+```{r}
+Inf / Inf
+```
+
+```{r}
+0 / 0
+```
+
+```{r}
+-Inf + Inf
+```
+
+## 3.4.4 NULL

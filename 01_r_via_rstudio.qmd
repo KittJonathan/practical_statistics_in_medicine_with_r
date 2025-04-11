@@ -1,0 +1,51 @@
+---
+title: "R via RStudio"
+format: html
+editor: visual
+---
+
+<https://practical-stats-med-r.netlify.app/intro_rstudio>
+
+# 1.1 Installing R and RStudio
+
+# 1.2 Starting R and RStudio
+
+```{r}
+14 + 16
+```
+
+# 1.3 Errors, warnings and messages in R
+
+```{r}
+hello
+```
+
+```{r}
+14 + 16 - 
+```
+
+# 1.4 R help resources
+
+```{r}
+help(median)
+```
+
+```{r}
+?median
+```
+
+```{r}
+help.search("geometric mean")
+```
+
+```{r}
+??"geometric mean"
+```
+
+```{r}
+apropos("med")
+```
+
+```{r}
+example(median)
+```

@@ -1,0 +1,21 @@
+---
+title: "RStudio projects"
+format: html
+editor: visual
+---
+
+<https://practical-stats-med-r.netlify.app/rstudio_projects>
+
+# 2.1 Working with RStudio projects
+
+## 2.1.1 Creating an RStudio project
+
+## 2.1.2 Organizing our RStudio Project folder
+
+-   data
+
+-   figures
+
+# 2.2 Opening a new R script
+
+# 2.3 Adding comments to a script
