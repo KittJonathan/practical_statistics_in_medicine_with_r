@@ -3,3 +3,48 @@ title: "R packages"
 format: html
 editor: visual
 ---
+
+# 5.1 What are R packages?
+
+## 5.1.1 Standard (base) R packages
+
+## 5.1.2 Add-on packages
+
+-   CRAN
+
+-   Github
+
+-   Bioconductor
+
+# 5.2 Package installation
+
+```{r}
+#| eval: false
+install.packages("rstatix")
+install.packages(c("rstatix", "dplyr", "ggplot2"))
+```
+
+# 5.3 Package loading
+
+```{r}
+library(rstatix)
+```
+
+# 5.4 The `{tidyverse}` package
+
+```{r}
+library(tidyverse)
+```
+
+# 5.5 The `{here}` package
+
+```{r}
+#| eval: false
+
+library(readxl)
+
+dat <- read_excel("C:/emily/project/data/covid19.xlsx")
+dat <- read_excel("C:/paul/project/data/covid19.xlsx")
+
+dat <- read_excel(here("data", "covid19.xlsx"))
+```

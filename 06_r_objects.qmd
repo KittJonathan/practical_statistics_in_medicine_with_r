@@ -1,0 +1,109 @@
+---
+title: "R objects"
+format: html
+editor: visual
+---
+
+# 6.1 What are the objects in R
+
+Objects in R have many properties associated with them, called **attributes**.
+
+These properties explain what an object represents and how it should be interpreted by R.
+
+Two of the most important attributes of an R object are the `class` and the `dimension` :
+
+```{r}
+class(iris)
+```
+
+```{r}
+dim(iris)
+```
+
+```{r}
+attributes(iris)
+```
+
+# 6.2 Named storage of objects
+
+## 6.2.1 Assignment operator (`<-`)
+
+```{r}
+x <- 1/40
+x
+```
+
+```{r}
+(x <- 1/40)
+```
+
+```{r}
+log(x)
+```
+
+Using spaces before and after comparison operators is recommended :
+
+```{r}
+x < -1/50
+```
+
+```{r}
+x<-1/50
+x
+```
+
+## 6.2.2 Other types of assignment
+
+```{r}
+x = 1/40
+x
+```
+
+```{r}
+1/40 -> x
+x
+```
+
+# 6.3 Reassigning an object
+
+```{r}
+x
+```
+
+```{r}
+x <- 100
+x
+```
+
+```{r}
+x <- x + 1
+x
+```
+
+# 6.4 Legal object names
+
+Object names must start with a letter and can contain letters, numbers, underscores and periods.
+
+They cannot start with a number or underscore, nor contain spaces at all.
+
+They cannot contain reserved words.
+
+```{r}
+make.names(names = "test-1&2")
+```
+
+```{r}
+Y <- 50
+Y
+y
+```
+
+# 6.5 We are not limited to store numbers in objects
+
+```{r}
+sentence <- "the cat sat on the mat"
+```
+
+```{r}
+sentence + 1
+```
