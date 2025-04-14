@@ -1,0 +1,96 @@
+---
+title: "Atomic vectors"
+format: html
+editor: visual
+---
+
+# 7.1 Introduction to vectors in R
+
+# 7.2 Atomic vectors
+
+4 types ("atomic classes") :
+
+-   logical
+
+-   integer
+
+-   double
+
+-   character
+
+## 7.2.1 One-element atomic vectors
+
+```{r}
+oev_a <- TRUE     # assign the logical TRUE to an object named oev_a
+oev_a             # call the object with its name
+```
+
+```{r}
+oev_b <- FALSE    # assign the logical FALSE to an object named oev_b
+oev_b             # call the object with its name
+```
+
+```{r}
+oev_c <- T        
+oev_c
+```
+
+```{r}
+oev_d <- F        
+oev_d
+```
+
+```{r}
+oev_e <- 3L          
+oev_e
+```
+
+```{r}
+oev_f <- 100L        
+oev_f
+```
+
+```{r}
+oev_g <- 0.000017   
+oev_g                       
+```
+
+```{r}
+oev_scientific <- 1.7e-5      
+oev_scientific              
+```
+
+```{r}
+oev_h <- "hello"      # double quotation marks
+oev_h
+```
+
+```{r}
+oev_i <- 'Covid-19'   # single quotation marks
+oev_i
+```
+
+```{r}
+oev_j <- "I love data analysis"
+oev_j
+```
+
+```{r}
+h <- "1"
+k <- "2"
+h + k
+```
+
+## 7.2.1 Longer atomic vectors
+
+```{r}
+1:5
+```
+
+```{r}
+x_seq <- 1:5
+```
+
+```{r}
+x_seq
+```
