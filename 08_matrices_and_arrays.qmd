@@ -1,0 +1,414 @@
+---
+title: "Matrices and arrays"
+format: html
+editor: visual
+---
+
+# 8.1 Packages we need
+
+```{r}
+library(matlib)
+```
+
+# 8.2 Definition of a matrix
+
+# 8.3 Creating a matrix in R
+
+```{r}
+X1 <- c(4, 3, 2, 0, 1, 0, 2, 4, 1, 1, 2, 3)
+
+dim(X1) <- c(3, 4)
+
+X1
+```
+
+```{r}
+X2 <- matrix(X1, nrow = 3, ncol = 4)
+X2
+```
+
+```{r}
+X3 <- matrix(X1, nrow = 3, ncol = 4, byrow = TRUE)
+X3
+```
+
+```{r}
+typeof(X3)
+```
+
+```{r}
+class(X3)
+```
+
+```{r}
+dim(X3)
+```
+
+```{r}
+x_logical <- c(TRUE, FALSE, FALSE, TRUE, FALSE, FALSE)
+X4 <- matrix(x_logical, nrow = 2, ncol = 3)
+X4
+```
+
+```{r}
+typeof(X4)
+```
+
+```{r}
+class(X4)
+```
+
+```{r}
+dim(X4)
+```
+
+```{r}
+x_char <- c("a", "b", "c", "d", "e", "f")
+X5 <- matrix(x_char, nrow = 2, ncol = 3)
+X5
+```
+
+```{r}
+typeof(X5)
+```
+
+```{r}
+class(X5)
+```
+
+```{r}
+dim(X5)
+```
+
+# 8.4 Using matrix subscripts
+
+```{r}
+X <- matrix(1:10, nrow=2)  # create a 2x5 numeric matrix filled by column
+X
+```
+
+```{r}
+X[2, ]   # select the 2nd row
+```
+
+```{r}
+X[, 2]  # select the 2nd column
+```
+
+```{r}
+X[1, 4]  # select the element in the 1st row, 4th column
+```
+
+```{r}
+X[1, c(4, 5)]  # select the elements in the 1st row, 4th and 5th column 
+```
+
+# 8.5 Special types of matrices
+
+## 8.5.1 The square matrix
+
+```{r}
+M <- matrix( c(5, 3, 4, 1, -1, 0, 0, 2, -1), nrow = 3)
+M
+```
+
+```{r}
+diag(M)
+```
+
+The trace of a square matrix is the sum of its main diagonal elements :
+
+```{r}
+tr(M)
+```
+
+## 8.5.2 The diagonal matrix
+
+A diagonal matrix is a special type of square matrix where all the elements outside the main diagonal are zero:
+
+```{r}
+elements <- c(4, -1, -5)
+D <- diag(elements)
+D
+```
+
+## 8.5.3 The identity matrix
+
+Often denoted as "I", a square matrix with ones on the main diagonal and zeros elsewhere.
+
+```{r}
+I <- diag(3)
+I
+```
+
+## 8.5.4 Symmetric matrix
+
+A square matrix that remains unchanged when we transpose it (we swap its rows and columns):
+
+```{r}
+S <- matrix(c(13, -4, 2, -4, 11, -2, 2, -2, 8), nrow = 3)
+S
+```
+
+# 8.6 Basic matrix algebra
+
+## 8.6.1 The transpose of a matrix
+
+```{r}
+A <- matrix(c(4, 0, -1, 1, -5, -2), nrow = 2)
+A
+```
+
+```{r}
+t(A)
+```
+
+## 8.6.2 Matrix addition
+
+```{r}
+B <-matrix(c(3, 0, 1, 2, -5, -2), nrow = 2)
+```
+
+```{r}
+A
+B
+```
+
+```{r}
+A + B
+```
+
+## 8.6.3 Scalar multiplication of matrices
+
+```{r}
+A
+```
+
+```{r}
+-3 * A
+```
+
+## 8.6.4 Element-wise multiplication of matrices (Hadamard product)
+
+```{r}
+A
+B
+```
+
+```{r}
+A * B
+```
+
+## 8.6.5 Multiplication of compatible matrices (matrix product)
+
+Compatible matrices: the number of columns in the first matrix is equal to the number of rows in the second matrix.
+
+```{r}
+c(4, -1, -5) %*% c(-5, 2, -2)
+4 * (-5) + (-1) * 2 + (-5) * (-2)
+```
+
+```{r}
+# matrix notation of the row vector
+A_row1 <- matrix(c(4, -1, -5), nrow = 1)
+A_row1
+```
+
+```{r}
+# matrix notation of the column vector
+C_col1 <- matrix(c(-5, 2, -2), nrow = 3)
+C_col1
+```
+
+```{r}
+# matrix multiplication
+A_row1 %*% C_col1
+```
+
+```{r}
+C <- matrix(c(-5, 2, -2, 5, 1, 0), nrow = 3)
+```
+
+```{r}
+A
+C
+```
+
+```{r}
+A %*% C
+```
+
+```{r}
+# Element in the 1st row and 1st column of the new matrix
+4 * (-5) + (-1) * 2 + (-5) * (-2)
+```
+
+```{r}
+# Element in the 1st row and 2nd column of the new matrix
+4 * 5 + (-1) * 1 + (-5) * 0
+```
+
+```{r}
+# Element in the 2nd row and 1st column of the new matrix
+0 * (-5) + 1 * 2 + (-2) * (-2)
+```
+
+```{r}
+# Element in the 2nd row and 2nd column of the new matrix
+0 * 5 + 1 * 1 + (-2) * 0
+```
+
+```{r}
+A
+B
+```
+
+```{r}
+t(A)
+B
+```
+
+```{r}
+t(A) %*% B
+```
+
+```{r}
+crossprod(A, B)
+```
+
+## 8.6.6 The determinant of a square matrix
+
+determinant = a scalar value that can be computed from the matrix's elements.
+
+```{r}
+E_minor <- matrix( c(1, 2, -1, 0), nrow = 2)
+E_minor 
+```
+
+```{r}
+det(E_minor)
+```
+
+```{r}
+(1 * 0) - ((-1) * 2)
+```
+
+```{r}
+E <- matrix( c(1, 2, 1, -1, 0, 1, 1, 1, 2), nrow = 3)
+E
+```
+
+```{r}
+det(E)
+```
+
+```{r}
+res1 <- E[3,1] * (E[1,2] * E[2,3] - E[1,3] * E[2,2])
+res2 <- E[3,2] * (E[1,1] * E[2,3] - E[1,3] * E[2,1])
+res3 <- E[3,3] * (E[1,1] * E[2,2] - E[1,2] * E[2,1])
+res1 - res2 + res3
+```
+
+## 8.6.7 The inverse of a matrix
+
+Given a square matrix E, its inverse is another square matrix of the same dimensions, denoted as $E^{-1}$, such that when these two matrices are multiplied together, they yield the identity matrix, typically denoted as I.
+
+The inverse of a matrix can be computed if its determinant is non-zero.
+
+```{r}
+# the solve() function takes a matrix as input and returns the matrix's inverse
+E_inv <- solve(E)
+E_inv
+```
+
+```{r}
+inv(E)
+```
+
+```{r}
+E %*% E_inv
+```
+
+## 8.6.8 Application: calculation of the average using matrices
+
+```{r}
+my_values <- c(2, 5, 7, -4, 8, 6, 3)
+mean(my_values)
+```
+
+```{r}
+n <- length(my_values)  # get the length (number of elements) of vector
+U <- matrix(data = 1, nrow = n, ncol =  1)
+U
+```
+
+```{r}
+V <- matrix(my_values, nrow = n, ncol = 1)
+V
+```
+
+```{r}
+average_my_values <- t(U) %*% V/n
+average_my_values 
+```
+
+## 8.6.6 Eigenvalues and eigenvectors
+
+```{r}
+S
+t(S)
+```
+
+A symmetric matrix guarantees that its eigenvalues are real numbers.
+
+```{r}
+ev <- eigen(S)
+ev
+```
+
+-   The 1st column vector represents the eigenvector corresponding to the eigenvalue 17
+
+-   The 2nd column vector represents the eigenvector corresponding to the eigenvalue 8
+
+-   The 3rd column vector represents the eigenvector corresponding to the eigenvalue 7
+
+# 8.7 Arrays
+
+## 8.7.1 Creating an array
+
+Arrays are similar to matrices but can have more than two dimensions:
+
+```{r}
+# build the 2x3x4 array
+my_array <- array(1:24, dim = c(2, 3, 4))
+my_array
+```
+
+```{r}
+typeof(my_array)
+```
+
+```{r}
+class(my_array)
+```
+
+```{r}
+dim(my_array)
+```
+
+## 8.7.2 Indexing in an array
+
+```{r}
+# access the 3rd matrix of the array
+my_array[, , 3]
+```
+
+```{r}
+# access the 2nd row of the 3rd matrix of the array.
+my_array[2, , 3]
+```
+
+```{r}
+# access the element in the 1st row and 3rd column of the 3rd matrix
+my_array[1, 3, 3]
+```

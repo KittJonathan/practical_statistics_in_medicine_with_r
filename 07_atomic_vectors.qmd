@@ -81,7 +81,7 @@ k <- "2"
 h + k
 ```
 
-## 7.2.1 Longer atomic vectors
+## 7.2.2 Longer atomic vectors
 
 ```{r}
 1:5
@@ -93,4 +93,428 @@ x_seq <- 1:5
 
 ```{r}
 x_seq
+```
+
+```{r}
+typeof(x_seq)
+```
+
+```{r}
+length(x_seq)
+```
+
+```{r}
+5:1
+```
+
+```{r}
+2.5:8.5
+```
+
+```{r}
+-3:4
+```
+
+```{r}
+c(2, 4.5, -1)
+```
+
+```{r}
+c(TRUE, FALSE, TRUE, FALSE)
+```
+
+```{r}
+c(T, F, T, F)
+```
+
+```{r}
+c("male", "female", "female", "male")
+```
+
+```{r}
+y_seq <- 3:7
+c(y_seq, 2, 4.5, -1)  # y_seq is an element of a vector
+```
+
+```{r}
+rep(1:4, times = 5)               # 5 times to repeat the complete vector
+rep(c(0, 4, 7), times = 3)        # 3 times to repeat the complete vector
+rep(c("a", "b", "c"), times = 2)  # 2 times to repeat the complete vector
+```
+
+```{r}
+rep(1:4, each = 5)               # each element is repeated 5 times
+rep(c(0, 4, 7), each = 3)        # each element is repeated 3 times
+rep(c("a", "b", "c"), each = 2)  # each element is repeated 2 times
+```
+
+```{r}
+# upper-case letters
+LETTERS
+
+# lower-case letters
+letters
+
+# months
+month.name
+
+# three-letter months
+month.abb
+```
+
+# 7.3 Mixing things in a vector - coercion
+
+## 7.3.1 Implicit coercion
+
+```{r}
+my_vector <- c(1, 4, "hello", TRUE)
+my_vector
+```
+
+The hierarchy of coercion is :
+
+logical \< integer \< numeric \< character
+
+```{r}
+# numeric vs character
+a <- c(10.5, 3.2, "I am a character string")
+a
+typeof(a)
+```
+
+```{r}
+# logical vs character
+b <- c(TRUE, FALSE, "hello")
+b
+typeof(b)
+```
+
+```{r}
+# logical vs numeric
+d <- c(FALSE, TRUE, 2)
+d
+typeof(d)
+```
+
+```{r}
+num_TF <- c(4, FALSE, TRUE, 2, -1, TRUE, FALSE, 0)
+num_TF
+sum(num_TF)
+mean(num_TF)
+```
+
+## 7.3.2 Explicit coercion
+
+```{r}
+f <- 1:5
+g <- as.character(f)
+g
+```
+
+```{r}
+as.numeric(g)
+```
+
+```{r}
+q <- c("1", "2", "3", "d", "5")
+as.numeric(q)
+```
+
+```{r}
+x_abcde <- c("a", "b", "c", "d", "e")
+as.numeric(x_abcde)
+```
+
+# 7.4 Operators applied between two vectors
+
+## 7.4.1 Arithmetic operators
+
+```{r}
+v <- c(1, 2, 3)
+v + 3
+```
+
+```{r}
+v * 3
+```
+
+```{r}
+v <- c(1, 2, 3)
+t <- c(8, 3, 2)
+```
+
+```{r}
+t + v           # addition
+```
+
+```{r}
+t * v           # multiplication
+```
+
+```{r}
+t^v             # exponent
+```
+
+```{r}
+t + 3 * v / 2   # remember the order of operations in R
+```
+
+Vectorization
+
+```{r}
+(1:5) * 2
+```
+
+```{r}
+2^(1:5)
+```
+
+```{r}
+z_seq <- 3:9      
+sqrt(z_seq)    # calculate the square root of all the elements of z_seq
+```
+
+```{r}
+round(sqrt(z_seq), digits = 2)
+```
+
+## 7.4.2 Dot (inner) product operator
+
+```{r}
+v %*% t
+v[1] * t[1] + v[2] * t[2] + v[3] * t[3]
+```
+
+## 7.4.3 Relational operators
+
+```{r}
+m <- c(4, 2, 3, 8)
+```
+
+```{r}
+m > 3
+```
+
+```{r}
+m >= 3
+```
+
+```{r}
+m == 3
+```
+
+```{r}
+m != 3
+```
+
+```{r}
+w <- c(2, 5.5, 6, 9)
+z <- c(8, 2.5, 14, 9)
+```
+
+```{r}
+w > z
+```
+
+```{r}
+w == z
+```
+
+```{r}
+w >= z
+```
+
+```{r}
+w != z
+```
+
+## 7.4.4 Logical operators are applied to vectors
+
+```{r}
+s <- c(1, 0, - 1, 0, TRUE, TRUE, FALSE)
+s
+```
+
+```{r}
+u <- c(2, 0, - 2, 2, TRUE, FALSE, FALSE)
+u
+```
+
+```{r}
+s & u
+```
+
+```{r}
+s[1] && u[1]
+```
+
+```{r}
+s && u
+```
+
+```{r}
+s | u
+```
+
+```{r}
+s[1] || u[1]
+```
+
+```{r}
+s || u
+```
+
+```{r}
+!s
+```
+
+```{r}
+!u
+```
+
+# 7.5 Statistical functions applied to vectors
+
+```{r}
+v_seq <- 5:10   
+v_seq
+```
+
+```{r}
+sum(v_seq)     # adds all the elements of a vector
+```
+
+```{r}
+mean(v_seq)    # calculate the arithmetic mean
+```
+
+```{r}
+median(v_seq)  # calculate the median
+```
+
+```{r}
+sd(v_seq)      # calculate the standard deviation
+```
+
+```{r}
+range(v_seq)   # returns the minimum and maximum values
+```
+
+```{r}
+v_seq2 <- c(v_seq, NA)
+typeof(v_seq2)
+```
+
+```{r}
+mean(v_seq2)
+```
+
+```{r}
+mean(v_seq2, na.rm = TRUE)
+```
+
+# 7.6 Subsetting vectors
+
+```{r}
+month.name
+```
+
+## 7.6.1 Selecting elements by indexing position
+
+```{r}
+month.name[3]           # select the 3rd month
+```
+
+```{r}
+month.name[3:5]         # select the 3rd, 4th, and 5th months
+```
+
+```{r}
+month.name[c(3, 4, 5)]
+```
+
+```{r}
+month.name[5:3]       # select the 5th, 4th, 3rd elements
+```
+
+```{r}
+month.name[c(1, 2, 3, 3, 4)]     # the 3rd element is selected twice
+```
+
+```{r}
+month.name[10:15]
+```
+
+```{r}
+month.name[-3]             # skip the 3rd month
+```
+
+```{r}
+month.name[c(-3, -7)]      # skip the 3rd and 7th elements
+```
+
+```{r}
+month.name[-c(3, 7)]       # skip the 3rd and 7th elements
+```
+
+```{r}
+month.name[-1:5]            
+```
+
+```{r}
+-(1:5)
+```
+
+```{r}
+month.name[-(1:5)]            # skip the 1st to 5th element
+```
+
+## 7.6.2 Selecting elements using boolean indices (T/F)
+
+```{r}
+fourmonths <- month.name[c(TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, 
+                           FALSE, FALSE, FALSE, FALSE, FALSE, FALSE)]
+fourmonths
+```
+
+```{r}
+fourmonths[c(TRUE, TRUE, FALSE, TRUE)]
+```
+
+## 7.6.3 Selecting elements by indexing names
+
+```{r}
+# Define a vector of month names
+nm <- c("month_1", "month_2", "month_3", "month_4")
+
+# Assign names to the elements of the 'fourmonths' vector using setNames()
+fourmonths2 <- setNames(fourmonths, nm)
+
+# Select elements with names "month_1", "month_2", and "month_4"
+fourmonths2[c("month_1", "month_2", "month_4")]
+```
+
+# 7.7 Vector recycling
+
+```{r}
+fourmonths          # call the "fourmonths" vector
+```
+
+```{r}
+fourmonths[c(TRUE, FALSE)]    # we provide a vector with only two elements
+```
+
+```{r}
+fourmonths[c(TRUE,FALSE,TRUE,FALSE)]
+```
+
+```{r}
+c(3, 2, 7) + c(6, 4, 0, 5, 8, 6)
+```
+
+```{r}
+c(3, 2, 7, 3, 2, 7) + c(6, 4, 0, 5, 8, 6) 
+```
+
+```{r}
+c(3, 2, 7) + c(6, 4, 0, 5, 8)
 ```
