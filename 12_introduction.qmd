@@ -1,0 +1,53 @@
+---
+title: "Introduction"
+format: html
+editor: visual
+---
+
+# 12.1 Probability theory
+
+# 12.2 The discipline of statistics
+
+Traditional (frequentist) statistics:
+
+-   descriptive statistics
+
+    -   measures of frequency (frequency, percentage)
+
+    -   measures of location and dispersion (mean, sd)
+
+-   inferential statistics
+
+    -   estimation
+
+    -   hypothesis testing
+
+# 12.3 Data and variables
+
+## 12.3.1 Biomedical data
+
+-   structured data (database)
+
+-   semi-structured data (emails)
+
+-   unstructured data (open text, images, videos)
+
+## 12.3.2 Variables
+
+An **independent** variable is the variable that is changed or controlled in a scientific experiment to test the effects on another variable
+
+A **dependent** (outcome) variable is the variable being tested in a scientific experiment and is affected by the independent variable(s) of interest
+
+# 12.4 Types of data
+
+-   Categorical
+
+    -   Nominal (blood type)
+
+    -   ordinal (degree of pain)
+
+-   Numerical
+
+    -   Discrete (number of children)
+
+    -   Continuous (height, blood pressure)

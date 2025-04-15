@@ -1,0 +1,416 @@
+---
+title: "Data visualization with ggplot2"
+format: html
+editor: visual
+---
+
+# 11.1 Introduction to ggplot2
+
+# 11.2 Covid-19 data
+
+```{r}
+library(readr)
+covid_data <- read_csv(here("data", "covid_data.csv"))
+```
+
+```{r}
+glimpse(covid_data)
+```
+
+## 11.2.1 Data preparation for the plots
+
+```{r}
+dat <- covid_data |> 
+  mutate(date = mdy(date),
+         region = factor(region),
+         income = factor(income),
+         cases_per_100k = round(confirmed / population * 100000, digits = 1),
+         tests_per_capita = round(total_tests / population, digits = 2)) |>
+  filter(date == "2021-06-12", population > 1000000)
+```
+
+# 11.3 Basic steps for creating a ggplot graph
+
+## 11.3.1 Step 0: Start with a default blank ggplot object
+
+```{r}
+ggplot()
+```
+
+## 11.3.2 Step 1: Add the dataset and define the x and y
+
+```{r}
+ggplot(data = dat, 
+       mapping = aes(x = gdp_capita, y = cases_per_100k))
+```
+
+```{r}
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k))
+```
+
+## 11.3.3 Step 2: Add geometry
+
+```{r}
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k)) +
+  geom_point()
+```
+
+## 11.3.4 Step 3: Add aesthetics to geometry
+
+```{r}
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k)) +
+  geom_point(aes(color = region))        
+```
+
+```{r}
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k)) +
+  geom_point(color = "deeppink")
+```
+
+```{r}
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k)) +
+  geom_point(aes(shape = region))
+```
+
+```{r}
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k)) +
+  geom_point(shape = 24)
+```
+
+```{r}
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k)) +
+  geom_point(shape = 24, color = "red")
+```
+
+```{r}
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k)) +
+  geom_point(shape = 24, color = "red", fill = "yellow")
+```
+
+```{r}
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k)) +
+  geom_point(aes(size = tests_per_capita))
+```
+
+# 11.4 Add a new geom (text information for each point)
+
+```{r}
+library(ggrepel)
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k)) +
+  geom_point(aes(size = tests_per_capita)) +
+  geom_text_repel(aes(label = country), seed = 123)
+```
+
+# 11.5 Change the default properties of the plot with scales
+
+## 11.5.1 Change the scale of the y axis
+
+```{r}
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k)) +
+  geom_point(aes(size = tests_per_capita)) +
+  geom_text_repel(aes(label = country), seed = 123) +
+  scale_y_log10()
+```
+
+## 11.5.2 Change the default point shapes
+
+```{r}
+# default
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k)) +
+  geom_point(aes(size = tests_per_capita, shape= region)) +
+  geom_text_repel(aes(label = country), seed = 123) +
+  scale_y_log10()
+
+# modified
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k)) +
+  geom_point(aes(size = tests_per_capita, shape= region)) +
+  geom_text_repel(aes(label = country), seed = 123) +
+  scale_y_log10() +
+  scale_shape_manual(values = c(4, 9, 2, 1, 0, 19, 8))
+```
+
+## 11.5.3 Change the default colors
+
+```{r}
+# default
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k)) +
+  geom_point(aes(size = tests_per_capita, color = region)) +
+  geom_text_repel(aes(label = country), seed = 123) +
+  scale_y_log10()
+
+# modified
+library(ggsci)
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k)) +
+  geom_point(aes(size = tests_per_capita, color = region)) +
+  geom_text_repel(aes(label = country), seed = 123) +
+  scale_y_log10() +
+  scale_color_jco()
+```
+
+# 11.6 Modify axis, legend, and plot labels with labs
+
+```{r}
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k)) +
+  geom_point(aes(size = tests_per_capita, color = region)) +
+  geom_text_repel(aes(label = country), seed = 123) +
+  scale_y_log10() +
+  scale_color_jco() +
+  labs(x = "GDP per capita ($)",
+       y = "Cases per 100,000 inhabitants",
+       color = "Region",
+       size = "Proportion tested",
+       title = "Confirmed cases per 100,000 inhabitants, GDP per \ncapita, and COVID-19 testing rate by country", 
+       subtitle = "May 20, 2021", 
+       caption = "Source Data: Covid-19 related data from {tidycovid19} package",
+       tag = 'A')
+```
+
+# 11.7 Modifying theme elements with theme
+
+## 11.7.1 element_line()
+
+```{r}
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k)) +
+  geom_point() +
+  theme(axis.line.x = element_line(color = "red", linewidth = 1),
+        axis.line.y = element_line(color = "green", linewidth = 1, linetype = 5))
+```
+
+```{r}
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k)) +
+  geom_point() +
+  theme(axis.ticks.x = element_line(color = "red", linewidth = 5),
+        axis.ticks.y = element_line(color = "green", linewidth = 5))
+```
+
+```{r}
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k)) +
+  geom_point() +
+  theme(panel.grid.major.x = element_line(color = "red", linewidth = 0.55),
+        panel.grid.major.y = element_line(color = "green", linewidth = 0.55))
+```
+
+```{r}
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k)) +
+  geom_point() +
+  theme(panel.grid.minor.x = element_line(color = "red", linewidth = 0.35, linetype = 2),
+        panel.grid.minor.y = element_line(color = "green", linewidth = 0.35, linetype = 2))
+```
+
+```{r}
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k)) +
+  geom_point() +
+  theme(panel.grid.major = element_line(color = "blue", linewidth = 0.55),
+        panel.grid.minor = element_line(color = "deeppink", linewidth = 0.35, linetype = 2))
+```
+
+## 11.7.2 element_text()
+
+```{r}
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k)) +
+  geom_point(aes(color = region)) +
+   labs(x = "GDP per capita ($)",
+       y = "Cases per 100,000 inhabitants",
+       color = "Region",
+       size = "Proportion tested",
+       title = "Confirmed cases per 100,000 inhabitants, GDP per \ncapita, and COVID-19 testing rate by country", 
+       subtitle = "May 20, 2021", 
+       caption = "Source Data: Covid-19 related data",
+       tag = 'A') +
+  theme(axis.title.x = element_text(color = "red", size = 18, angle = 10),
+        axis.title.y = element_text(color = "green", size = 10))
+```
+
+```{r}
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k)) +
+  geom_point(aes(color = region)) +
+   labs(x = "GDP per capita ($)",
+       y = "Cases per 100,000 inhabitants",
+       color = "Region",
+       size = "Proportion tested",
+       title = "Confirmed cases per 100,000 inhabitants, GDP per \ncapita, and COVID-19 testing rate by country", 
+       subtitle = "May 20, 2021", 
+       caption = "Source Data: Covid-19 related data",
+       tag = 'A') +
+  theme(axis.text.x = element_text(color = "red", size = 16, face="bold", angle = 90),
+        axis.text.y = element_text(color = "green", size = 10))
+```
+
+```{r}
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k)) +
+  geom_point(aes(color = region)) +
+   labs(x = "GDP per capita ($)",
+       y = "Cases per 100,000 inhabitants",
+       color = "Region",
+       size = "Proportion tested",
+       title = "Confirmed cases per 100,000 inhabitants, GDP per \ncapita, and COVID-19 testing rate by country", 
+       subtitle = "May 20, 2021", 
+       caption = "Source Data: Covid-19 related data",
+       tag = 'A') +
+  theme(plot.title = element_text(color = "deeppink"),
+        plot.subtitle = element_text(color = "blue"),
+        plot.caption = element_text(color = "orange", size = 8),
+        plot.tag = element_text(color = "green", size = 20))
+```
+
+```{r}
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k)) +
+  geom_point(aes(color = region)) +
+   labs(x = "GDP per capita ($)",
+       y = "Cases per 100,000 inhabitants",
+       color = "Region",
+       size = "Proportion tested",
+       title = "Confirmed cases per 100,000 inhabitants, GDP per \ncapita, and COVID-19 testing rate by country", 
+       subtitle = "May 20, 2021", 
+       caption = "Source Data: Covid-19 related data",
+       tag = 'A') +
+  theme(legend.title = element_text(color = "red", size = 16),
+        legend.text = element_text(color = "green", size = 10))
+```
+
+## 11.7.3 element_rect()
+
+```{r}
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k)) +
+  geom_point(aes(color = region)) +
+   labs(x = "GDP per capita ($)",
+       y = "Cases per 100,000 inhabitants",
+       color = "Region",
+       size = "Proportion tested",
+       title = "Confirmed cases per 100,000 inhabitants, GDP per \ncapita, and COVID-19 testing rate by country", 
+       subtitle = "May 20, 2021", 
+       caption = "Source Data: Covid-19 related data",
+       tag = 'A') +
+  theme(plot.background = element_rect(fill = "deeppink"))
+```
+
+```{r}
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k)) +
+  geom_point(aes(color = region)) +
+   labs(x = "GDP per capita ($)",
+       y = "Cases per 100,000 inhabitants",
+       color = "Region",
+       size = "Proportion tested",
+       title = "Confirmed cases per 100,000 inhabitants, GDP per \ncapita, and COVID-19 testing rate by country", 
+       subtitle = "May 20, 2021", 
+       caption = "Source Data: Covid-19 related data",
+       tag = 'A') +
+  theme(panel.background = element_rect(fill = "deeppink"))
+```
+
+```{r}
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k)) +
+  geom_point(aes(color = region)) +
+   labs(x = "GDP per capita ($)",
+       y = "Cases per 100,000 inhabitants",
+       color = "Region",
+       size = "Proportion tested",
+       title = "Confirmed cases per 100,000 inhabitants, GDP per \ncapita, and COVID-19 testing rate by country", 
+       subtitle = "May 20, 2021", 
+       caption = "Source Data: Covid-19 related data",
+       tag = 'A') +
+  theme(legend.background = element_rect(fill = "deeppink"))
+```
+
+```{r}
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k)) +
+  geom_point(aes(color = region)) +
+   labs(x = "GDP per capita ($)",
+       y = "Cases per 100,000 inhabitants",
+       color = "Region",
+       size = "Proportion tested",
+       title = "Confirmed cases per 100,000 inhabitants, GDP per \ncapita, and COVID-19 testing rate by country", 
+       subtitle = "May 20, 2021", 
+       caption = "Source Data: Covid-19 related data",
+       tag = 'A') +
+  theme(legend.key = element_rect(fill = "deeppink"))
+```
+
+# 11.8 Themes
+
+## 11.8.1 Default ggplot2 theme
+
+```{r}
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k)) +
+  geom_point(aes(size = tests_per_capita, color = region)) +
+  geom_text_repel(aes(label = country), 
+                  min.segment.length = 0, seed = 42, 
+                  box.padding = 0.1, color = "black", size = 5) +
+  scale_y_log10() +
+  labs(x = "GDP per capita ($)",
+       y = "Cases per 100,000 inhabitants (log scale)",
+       color = "Region",
+       size = "Proportion tested",
+       title = "Confirmed cases per 100,000 inhabitants, GDP per capita, and COVID-19 testing rate by country", 
+       subtitle = "May 20, 2021", 
+       caption = "Source Data: Covid-19 related data Jonhs Hopkins University")
+```
+
+## 11.8.2 Predefined theme
+
+```{r}
+library(ggthemes)
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k)) +
+  geom_point(aes(size = tests_per_capita, color = region)) +
+  geom_text_repel(aes(label = country), 
+                  min.segment.length = 0, seed = 42, 
+                  box.padding = 0.1, color = "black", size = 5) +
+  scale_y_log10() +
+  labs(x = "GDP per capita ($)",
+       y = "Cases per 100,000 inhabitants (log scale)",
+       color = "Region",
+       size = "Proportion tested",
+       title = "Confirmed cases per 100,000 inhabitants, GDP per capita, and COVID-19 testing rate by country", 
+       subtitle = "May 20, 2021", 
+       caption = "Source Data: Covid-19 related data Jonhs Hopkins University") +
+  theme_fivethirtyeight()
+```
+
+## 11.8.3 Publication quality figure
+
+```{r}
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k)) +
+  geom_smooth(color = "red") +
+  geom_point(aes(size = tests_per_capita, color = region), shape = 1, stroke = 2) +
+  geom_text_repel(aes(label = country), 
+                  min.segment.length = 0, seed = 42, 
+                  box.padding = 0.1, color = "black", size = 5) +
+  scale_y_log10() +
+  scale_color_jco() +
+  labs(x = "GDP per capita ($)",
+       y = "Cases per 100,000 inhabitants (log scale)",
+       color = "Region",
+       size = "Proportion tested",
+       title = "Confirmed cases per 100,000 inhabitants, GDP per capita, and COVID-19 testing rate by country", 
+       subtitle = "May 20, 2021", 
+       caption = "Source Data: Covid-19 related data Jonhs Hopkins University") +
+  theme_fivethirtyeight(base_size = 16) +
+  theme(plot.title = element_text(size = 17),
+        axis.title = element_text(face = "bold"),
+        legend.title = element_text(face = "bold")) +
+  guides(color = guide_legend(override.aes = list(size = 4)))
+```
+
+```{r}
+ggplot(dat, aes(x = gdp_capita, y = cases_per_100k)) +
+  geom_smooth(method = lm, color = "red") +
+  geom_point(aes(size = tests_per_capita, color = region), shape = 1, stroke = 2) +
+  geom_text_repel(aes(label = country), 
+                  min.segment.length = 0, seed = 42, 
+                  box.padding = 0.1, color = "black", size = 5) +
+  scale_x_log10() +
+  scale_y_log10() +
+  scale_color_jco() +
+  labs(x = "GDP per capita ($) (log scale)",
+       y = "Cases per 100,000 inhabitants (log scale)",
+       color = "Region",
+       size = "Proportion tested",
+       title = "Confirmed cases per 100,000 inhabitants, GDP per capita, and COVID-19 testing rate by country", 
+       subtitle = "May 20, 2021", 
+       caption = "Source Data: Covid-19 related data Jonhs Hopkins University") +
+  theme_fivethirtyeight(base_size = 16) +
+  theme(plot.title = element_text(size = 17),
+        axis.title = element_text(face = "bold"),
+        legend.title = element_text(face = "bold")) +
+  guides(color = guide_legend(override.aes = list(size = 4)))
+```

@@ -3,3 +3,269 @@ title: "Lists and data frames"
 format: html
 editor: visual
 ---
+
+# 9.1 Creating a list
+
+```{r}
+my_list <- list(1:5, c("apple", "carrot"), c(TRUE, TRUE, FALSE))
+my_list
+```
+
+```{r}
+my_list <- list(
+              num = 1:5, 
+              fruits = c("apple", "carrot"), 
+              TF = c(TRUE, TRUE, FALSE))
+my_list
+```
+
+```{r}
+class(my_list)
+```
+
+# 9.2 Subsetting a list
+
+## 9.2.1 Subset list and preserve output as list
+
+```{r}
+my_list[2]    # extract the second list item (indexing by position)
+```
+
+```{r}
+class(my_list[2])
+```
+
+```{r}
+my_list["fruits"]   # same as above but using the item's name
+```
+
+```{r}
+my_list[c(FALSE, TRUE, FALSE)]    # same as above but using boolean indices (TRUE/FALSE)
+```
+
+## 9.2.2 Subset list and simplify the output
+
+```{r}
+my_list[[2]]   # extract the second list item and simplify it to a vector
+```
+
+```{r}
+class(my_list[[2]])
+```
+
+```{r}
+my_list[["fruits"]]   # same as above but using the item's name
+```
+
+```{r}
+my_list$fruits  # extract the numbers and simplify to a vector
+```
+
+## 9.2.3 Subset list to get individual elements out of a list item
+
+```{r}
+my_list
+```
+
+```{r}
+my_list[[2]][2]          # using the index
+```
+
+```{r}
+my_list[["fruits"]][2]  # using the name of the list item
+```
+
+```{r}
+my_list$fruits[2]       # using the $
+```
+
+# 9.3 Unlist a list
+
+```{r}
+my_unlist <- unlist(my_list)
+my_unlist
+```
+
+```{r}
+class(my_unlist)
+```
+
+# 9.4 Recursive vectors and nested lists
+
+```{r}
+my_super_list <- list(item1 = 3.14,
+                      item2 = list(item2a_num = 5:10,
+                                   item2b_char = c("a", "b", "c")))
+
+my_super_list
+```
+
+```{r}
+# preserve the output as a list
+my_super_list[[2]][1]
+```
+
+```{r}
+class(my_super_list[[2]][1])
+```
+
+```{r}
+# simplify the output
+my_super_list[[2]][[1]]
+```
+
+```{r}
+class(my_super_list[[2]][[1]])
+```
+
+```{r}
+# same as above with names
+my_super_list[["item2"]][["item2a_num"]]
+```
+
+```{r}
+# extract individual element
+my_super_list[[2]][[2]][3]
+```
+
+```{r}
+class(my_super_list[[2]][[2]][3])
+```
+
+# 9.5 Data frames
+
+A data frame is a special type of list with equal-length atomic vectors as its items.
+
+## 9.5.1 Create a data frame with `tibble()`
+
+```{r}
+library(tidyverse)   # load the tidyverse package
+library(rstatix)
+
+dat <- tibble(
+  age = c(30, 65, 35, 25, 45, 55, 40, 20),
+  smoking = c(0, 1, 1, 0, 1, 0, 0, 1),
+  ABO = c("A", "O", "O", "O", "B", "O", "A", "A"),
+  bmi = c(2, 3, 2, 2, 4, 4, 3, 1),
+  occupation = c("Journalist", "Chef", "Doctor", "Teacher",
+                  "Lawyer", "Musician", "Pharmacist", "Nurse"),
+  adm_date = c("10-09-2023", "10-12-2023", "10-18-2023", "10-27-2023",
+               "11-04-2023", "11-09-2024", "11-22-2023", "12-02-2023")
+)
+
+dat
+```
+
+```{r}
+typeof(dat)
+class(dat)
+dim(dat)
+```
+
+```{r}
+attributes(dat)
+```
+
+## 9.5.2 Accessing variables in a data frame
+
+```{r}
+dat[["age"]]
+dat[[2]]
+```
+
+```{r}
+dat$age
+```
+
+```{r}
+dat$age[2:5]
+```
+
+```{r}
+pull(dat, age)
+```
+
+## 9.5.3 Converting to the appropriate data type
+
+```{r}
+glimpse(dat)
+```
+
+```{r}
+dat$smoking <- factor(dat$smoking, levels = c(0, 1), 
+                      labels = c("non-smoker", "smoker"))
+dat
+```
+
+```{r}
+levels(dat$smoking)
+```
+
+```{r}
+# create a count table
+table(dat$ABO)
+```
+
+```{r}
+# create a vector containing the blood types A, B, AB, and O
+ABO_levels <- c("A", "B", "AB", "O")
+
+dat$ABO <- factor(dat$ABO, levels = ABO_levels)
+dat
+```
+
+```{r}
+# show the levels of status variable
+levels(dat$ABO)
+```
+
+```{r}
+# create a count table
+table(dat$ABO)
+```
+
+```{r}
+# create a vector containing the four bmi categories
+bmi1_labels <- c("underweight", "healthy", "overweight", "obesity")
+
+# convert the variable to factor
+dat$bmi1 <- factor(dat$bmi, levels = c(1, 2, 3, 4), 
+                   labels = bmi1_labels, ordered = TRUE)
+dat$bmi1
+```
+
+```{r}
+dat
+```
+
+```{r}
+dat$bmi1[2] > dat$bmi1[6]
+```
+
+```{r}
+# recode the values
+dat$bmi2 <- case_match(dat$bmi, 
+                      1 ~ "underweight",
+                      2 ~ "healthy",
+                      c(3, 4) ~ "overweight/obesity")
+
+# set the levels in a order
+bmi2_levels <- c("underweight", "healthy", "overweight/obesity")
+
+# convert the variable to factor
+dat$bmi2 <- factor(dat$bmi2, levels = bmi2_levels, ordered = TRUE)
+dat$bmi2
+```
+
+```{r}
+dat
+```
+
+```{r}
+dat$adm_date <- mdy(dat$adm_date)
+dat
+```
+
+```{r}
+class(dat$adm_date)
+```

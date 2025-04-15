@@ -1,0 +1,229 @@
+---
+title: "Data import, manipulation, and transformation"
+format: html
+editor: visual
+---
+
+# 10.1 Importing data
+
+## 10.1.1 Importing data from Excel using the RStudio interface
+
+## 10.1.2 Importing data from Excel into R with commands
+
+```{r, eval=FALSE}
+library(here)
+library(readxl)
+
+dat <- read_excel(here("data", "shock_index.xlsx"))
+```
+
+```{r, eval=FALSE}
+head(dat)
+head(dat, 10)
+tail(dat)
+```
+
+# 10.2 Basic data manipulations
+
+## 10.2.1 Adding a unique identifier for each observation
+
+```{r, eval=FALSE}
+library(tibble)
+dat <- rowid_to_column(dat)
+dat
+```
+
+## 10.2.2 Renaming variables and cleaning names
+
+```{r, eval=FALSE}
+library(dplyr)
+dat <- rename(dat, 
+               patient_ID = rowid,
+               Heart.Rate = HR)
+dat
+```
+
+```{r, eval=FALSE}
+library(janitor)
+dat <- clean_names(dat)
+dat
+```
+
+## 10.2.3 Converting to the appropriate data type
+
+```{r, eval=FALSE}
+dat$sex <- factor(dat$sex, levels = c("F", "M"), 
+                  labels = c("female", "male"))
+dat
+```
+
+# 10.3 Basic data transformations
+
+## 10.3.1 Subsetting observations (rows)
+
+```{r, eval=FALSE}
+dat1 <- dat[5:10, ]
+dat1
+```
+
+```{r, eval=FALSE}
+dat2 <- dat[which(dat$age > 55), ]
+dat2
+```
+
+```{r, eval=FALSE}
+dat3 <- dat[which(dat$age > 55 & dat$sex == "female"), ]
+dat3
+```
+
+```{r, eval=FALSE}
+dat4 <- subset(dat, age > 55)
+dat4
+```
+
+```{r, eval=FALSE}
+dat5 <- subset(dat, age > 55 & sex == "female")
+dat5
+```
+
+```{r, eval=FALSE}
+dat6 <- filter(dat, age > 55)
+dat6
+```
+
+```{r, eval=FALSE}
+dat7 <- filter(dat, age > 55, sex == "female")
+dat7
+```
+
+## 10.3.2 Reordering observations (rows)
+
+```{r, eval=FALSE}
+dat8 <- arrange(dat, sbp)
+head(dat8, 10)
+```
+
+```{r, eval=FALSE}
+dat9 <- arrange(dat, desc(sbp))
+head(dat9, 10)
+```
+
+```{r, eval=FALSE}
+dat10 <- arrange(dat, sbp, heart_rate)
+head(dat10, 10)
+```
+
+## 10.3.3 Subsetting variables (columns)
+
+```{r, eval=FALSE}
+dat11 <- dat[, c("sex", "age" , "heart_rate")]
+head(dat11)
+```
+
+```{r, eval=FALSE}
+dat12 <- dat[, !names(dat) %in% c("patient_id", "sbp")]
+head(dat12)
+```
+
+```{r, eval=FALSE}
+dat13 <- dat[, c(2, 3, 5)]
+head(dat13)
+```
+
+```{r, eval=FALSE}
+dat14 <- dat[-c(1, 4)]
+head(dat14)
+```
+
+```{r, eval=FALSE}
+dat15 <- subset(dat, select = c("sex", "age" , "heart_rate"))
+head(dat15)
+```
+
+```{r, eval=FALSE}
+dat16 <- subset(dat, select = c(2, 3, 5))
+head(dat16)
+```
+
+```{r, eval=FALSE}
+dat17 <- select(dat, sex, age, heart_rate)
+head(dat17)
+```
+
+## 10.3.4 Creating new variables
+
+```{r, eval=FALSE}
+dat18 <- mutate(dat, shock_index = round(heart_rate / sbp, digits = 2))
+dat18
+```
+
+```{r, eval=FALSE}
+dat19 <- mutate(dat18,
+                shock_index2 = cut(shock_index, breaks = c(-Inf, 0.5, 
+                                                           0.7, Inf),
+                                   labels = c("low","normal","high"))
+               )
+dat19
+```
+
+# 10.4 Using the native pipe operator in a sequence of commands
+
+```{r, eval=FALSE}
+sub_dat <- dat |> 
+  mutate(shock_index = round(heart_rate / sbp, digits = 2),
+         shock_index2 = cut(shock_index, breaks = c(-Inf, 0.5, 0.7, Inf),
+                            labels = c("low","normal","high"))
+  ) |> 
+  filter(shock_index2 == "low" | shock_index2 == "high")
+```
+
+```{r, eval=FALSE}
+print(sub_dat, n = Inf)
+```
+
+```{r, eval=FALSE}
+dat |> 
+  mutate(shock_index = round(heart_rate / sbp, digits = 2),
+         shock_index2 = cut(shock_index, breaks = c(-Inf, 0.5, 0.7, Inf),
+                            labels = c("low","normal","high"))
+  ) |> 
+  filter(shock_index2 %in% c("low", "high"))
+```
+
+# 10.5 Reshaping data
+
+```{r, eval=FALSE}
+dat_TCH <- read_excel(here("data", "cholesterol.xlsx"))
+head(dat_TCH)
+```
+
+## 10.5.1 Ensuring that every row has a unique identifier
+
+```{r, eval=FALSE}
+dat_TCH <- dat_TCH |> 
+  rowid_to_column()
+head(dat_TCH)
+```
+
+## 10.5.2 From wide to long format
+
+```{r, eval=FALSE}
+library(tidyr)
+dat_TCH2_long <- dat_TCH |> 
+  pivot_longer(
+    cols = starts_with("week"), 
+    names_to = "week",
+    values_to = "total_cholesterol"
+  )
+head(dat_TCH2_long)
+```
+
+## 10.5.3 From long to wide format
+
+```{r, eval=FALSE}
+dat_TCH2_long |> 
+  pivot_wider(
+    names_from = week,
+    values_from = total_cholesterol  
+    )
+```
