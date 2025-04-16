@@ -1,0 +1,225 @@
+---
+title: "Probability distributions"
+format: html
+editor: visual
+---
+
+# 14.1 Packages we need
+
+```{r}
+library(tidyverse)
+library(igraph)
+```
+
+# 14.2 Random variables and probability distributions
+
+A **random variable** assigns a numerical quantity to every possible outcome of a random phenomenon and can be:
+
+-   discrete if it takes either a finite number or an infinite sequence of possible values
+
+-   continuous if it takes any value in some interval on the real numbers
+
+Example of the blood type:
+
+-   X = 1 for blood type A
+
+-   X = 2 for blood type B
+
+-   X = 3 for blood type AB
+
+-   X = 4 for blood type O
+
+The **probability distribution** describes the probability of different possible values of random variable X.
+
+Probability distributions are often presented using probability tables or graphs:
+
+|                |      |      |      |      |
+|----------------|------|------|------|------|
+| **Blood type** | A    | B    | AB   | O    |
+| **X**          | 1    | 2    | 3    | 4    |
+| **P(X)**       | 0.41 | 0.10 | 0.04 | 0.45 |
+
+Blood types matching for a safe transfusion:
+
+```{r}
+# data in a form of a matrix
+x <- c(1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1)
+nodes_names <- c("O", "A", "B", "AB")
+adjm <- matrix(x, 4, dimnames = list(nodes_names, nodes_names))
+
+set.seed(124)
+# build the graph object
+network <- graph_from_adjacency_matrix(adjm)
+
+# plot it
+plot(network, vertex.size= 32, vertex.color = "red")
+```
+
+What is the probability that a random selected person from the population can donate blood to someone with type B blood?
+
+$$
+P(blood\ type\ B\ OR\ blood\ type\ O)=P(X=2)+P(X=4)=0.10+0.45=0.55
+$$
+
+Degrees of freedom (i.e., the number of parameters that are free to vary) are intrinsic to probability distributions, influencing their shapes, properties, and applications and statistical analysis. For instance, in the chi-square, t, and F distributions, degrees of freedom determine their characteristics.
+
+# 14.3 Discrete probability distributions
+
+The probability distribution of a discrete random variable X is defined by the **probability mass function (pmf)** as:
+
+$$
+P(X=x)=P(x)
+$$
+
+where
+
+$P(X=x)$ is the probability that the random variable X takes value x and
+
+$P(x)$ is the probability of the specific outcome x occuring
+
+The pmf has two properties:
+
+-   $P(x) \ge 0$
+
+-   $\sum_xP(x)=1$
+
+The **cumulative distribution function (cdf)** gives the probability that the random variable X is less than or equal to x and is usually denoted as F(x):
+
+$$
+F(x)=P(X \le x) = \sum_{x_i \le x}P(x_i)
+$$
+
+When dealing with a random variable, it is common to calculate three important summary statistics: the expected value, variance and standard variation.
+
+-   Expected value, denoted $E(X)$ or $\mu$ is defined as the weighted average of the values that X can take on, with each possible value being weighted by its respective probability, $P(x)$
+
+$$
+\mu=E(X)=\sum_i x_i.P(x_i)
+$$
+
+-   Variance, denoted $\sigma^2$ is a measure of the variability of the X
+
+$$
+\sigma^2=Var(X)=E[X-E(X)]^2=E[(X-\mu)^2]=\sum_i (x_i-\mu)^2P(x_i)
+$$
+
+There is an easier form of this formula:
+
+$$
+\sigma^2=Var(X)=E(X^2)-E(X)^2=\sum_i x_i^2P(x_i)-\mu^2
+$$
+
+-   Standard deviation: square root of the variance
+
+$$
+\sigma=\sqrt{Var(X)}=\sqrt{\sigma^2}
+$$
+
+## 14.3.1 Bernouilli distribution
+
+A random experiment with two possible outcomes, generally referred to as success (x=1) and failure (x=0), is called a **Bernouilli trial**.
+
+Let X be a binary random variable of a Bernouilli trial which takes the value 1 (success) with probability p and 0 (failure) with probability (1-p).
+
+The distribution of the X variable is called Bernouilli distribution with parameter $p$, denoted as $X \sim Bernouilli(p)$, where $0 \le p \le 1$
+
+-   Probability mass function pmf:
+
+    $$
+    P(X=x)=\left\{{1-p, \text{ for x = 0}\atop p, \text{ for x = 1}}\right.
+    $$
+
+or
+
+$$
+P(X=x)=p^x(1-p)^{1-x} for\ x\in\{0,1\}
+$$
+
+$$
+
+$$
+
+-   Cumulative distribution function cdf of X:
+
+$$
+F(x) = P(X \le x)= {\begin{cases}0,&for\ x <0\\1-p,&for\ 0\leq x < 1\\1,&for\ x \geq 1 \end{cases}}
+$$
+
+The expected value of random variable X, with Bernouilli(p) distribution is:
+
+$$
+\mu=E(X)=p
+$$
+
+The variance is:
+
+$$
+\sigma^2=Var(X)=p(1-p)
+$$
+
+And the standard deviation is:
+
+$$
+\sigma=\sqrt{Var(X)}=\sqrt{p(1-p)}
+$$
+
+Let X be a random variable representing the result of a surgical procedure, where X = 1 if the surgery was successful and X = 0 if it was unsuccessful. Suppose that the probability of success if 0.7; then X follows a Bernouilli distribution with parameter $p=0.7$:
+
+$$
+X\sim Bernouilli(0.7)
+$$
+
+-   The pmf for this distribution is:
+
+$$
+P(X=x)={\begin{cases}0.3,&for\ x=0\\0.7,&for\ x=1\end{cases}}
+$$
+
+|          |     |     |
+|----------|-----|-----|
+| **X**    | 0   | 1   |
+| **P(X)** | 0.3 | 0.7 |
+
+```{r}
+# Create a data frame
+x <- as.factor(c(0, 1))
+y <- c(0.3, 0.7)
+dat1 <- data.frame(x, y)
+ 
+# Plot
+ggplot(dat1, aes(x = x, y = y)) +
+  geom_segment(aes(x = x, xend=x, y=0, yend = y), color = "black") +
+  geom_point(color="deeppink", size = 4) +
+  theme_classic(base_size = 14) +
+  labs(title = "pmf Bernoulli(0.7)",
+       x = "X", y = "Probability") +
+  theme(axis.text = element_text(size = 14))
+```
+
+-   The cdf of this distribution is:
+
+$$
+F(x) = P(X \le x)={\begin{cases}0,&for\ x <0\\0.3,&for\ 0\leq x < 1\\1,&for\ x \geq 1 \end{cases}}
+$$
+
+```{r}
+# Create a data frame
+dat2 <- data.frame(x = -1:2, 
+                   y =  pbinom(-1:2, size = 1, prob = 0.7))
+# Step line plot
+ggplot(dat2, aes(x=x, y=y)) +
+  geom_step() +
+  scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.1)) +
+theme_classic(base_size = 14) +
+  labs(title = "cdf Bernoulli(0.7)", 
+       x = "X", y = "F(x)") +
+  theme(axis.text = element_text(size = 14))
+```
+
+-   The mean is $\mu=p=0.7$ and the variance is $\sigma^2=p(1-p)=0.7.(1-0.7)=0.7 * 0.3=0.21$
+
+## 14.3.2 Binomial distribution
+
+1.  There is a fixed number of *n* repeated Bernoulli trials
+2.  The *n* trials are all independent. That is, knowing the result of one trial does not change the probability we assign to other trials
+3.  Both probability of success, *p*, and probability of failure, *1-p*, are constant throughout the trials
