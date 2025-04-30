@@ -510,3 +510,424 @@ The standard deviation is often preferred over the variance because it is in the
 $\sigma=\sqrt{\text{Var(X)}}=\sqrt{\sigma^2}$
 
 ## 14.4.1 Uniform distribution
+
+The simplest continuous probability distribution is the uniform distribution. Let X be a continuous random variable that follows the uniform distribution with parameters the minimum value $a$ and the maximum value $b$ ($a<b$), $X \sim Uniform (a,b)$
+
+-   The probability density function (pdf) of X is given by:
+
+$$f(x) = \begin{cases}
+\frac{1}{b - a} & \text{for } a \leq x \leq b \\
+0 & \text{otherwise}
+\end{cases}$$
+
+-   The cumulative distribution function (cdf) of X is:
+
+$$F(x) = \begin{cases}
+0 & \text{for } x < a \\
+\frac{x - a}{b - a} & \text{for } a \leq x \leq b \\
+1 & \text{for } x > b
+\end{cases} $$
+
+The mean of X is given by:
+
+$$\mu = \frac{a + b}{2}$$
+
+The variance of the X is given by: $$\sigma^2 = \frac{(b - a)^2}{12}$$
+
+The uniform distribution, with a=0 and b=1, is highly useful as a random number generator.
+
+Let X be a random variable that follows the uniform distribution. Find the main characteristics of this distribution.
+
+Then utilize this distribution to randomize 100 individuals between treatments A and B in a clinical trial.
+
+-   The pdf for this distribution is:
+
+$$f(x) = \begin{cases}
+1 & \text{for } 0 \leq x \leq 1 \\
+0 & \text{otherwise}
+\end{cases}$$
+
+```{r}
+# Define the range of x values (including values outside the range)
+x_values <- seq(-0.5, 1.5, by = 0.01)
+
+# Calculate the PDF values for the uniform distribution
+pdf_values <- dunif(x_values, min = 0, max = 1)
+
+# Create a data frame for the PDF plot
+pdf_data <- data.frame(x = x_values, PDF = pdf_values)
+
+# Plot the PDF
+ggplot(pdf_data, aes(x = x, y = PDF)) +
+  geom_line() +
+  xlim(-0.5, 1.5) +
+  labs(title = "pdf Uniform(0, 1)",
+       x = "X", y = "P(x)") +
+  theme(axis.text = element_text(size = 14))
+```
+
+-   The cdf for this distribution is:
+
+$$F(x) = \begin{cases}
+0 & \text{for } x < 0 \\
+x & \text{for } 0 \leq x \leq 1 \\
+1 & \text{for } x > 1
+\end{cases} $$
+
+```{r}
+# Calculate the CDF values for the uniform distribution
+cdf_values <- punif(x_values, min = 0, max = 1)
+
+# Create a data frame for the CDF plot
+cdf_data <- data.frame(x = x_values, CDF = cdf_values)
+
+# Plot the CDF
+ggplot(cdf_data, aes(x = x, y = CDF)) +
+  geom_line() +
+  xlim(-0.5, 1.5) +
+    labs(title = "cdf Uniform(0, 1)",
+         x = "X", y = "F(x)") +
+  theme(axis.text = element_text(size = 14))
+```
+
+The mean and variance of a random variable that follows the Uniform(0, 1) distribution are:
+
+-   $μ = \frac{0 + 1}{2} = \frac{1}{2}$
+-   $σ^2 = \frac{(1 - 0)^2}{12} = \frac{1}{12}$
+
+Next, we use Uniform(0,1) to randomize individuals between treatments A and B in a clinical trial:
+
+```{r}
+# Set seed for reproducibility
+set.seed(235)
+
+# Define the sample size of the clinical trial
+N <- 100
+
+# Create a data frame to store the information
+data <- data.frame(id = paste("id", 1:N, sep = ""), trt = NA)
+
+# Simulate 100 uniform random variables from (0-1)
+x <- runif(N)
+# Display the first 10 values
+x[1:10]
+```
+
+```{r}
+# Make treatment assignments, if x < 0.5 treatment A else B
+data$trt <- ifelse(x < 0.5, "A", "B")
+
+# Display the first few rows of the data frame
+head(data, 10)
+```
+
+```{r}
+# Display the counts and proportions of each treatment
+table(data$trt)
+```
+
+```{r}
+prop.table(table(data$trt))
+```
+
+## 14.4.2 Normal distribution
+
+A normal distribution, also known as a Gaussian distribution, is a fundamental concept in statistics and probability theory and is defined by two parameters : the mean ($\mu$) and the standard deviation ($\sigma$).
+
+-   The probability density function (pdf) of $X ∼ Normal(μ, σ^2)$ is given by:
+
+$$ f(x)={\frac {1}{\sigma {\sqrt {2\pi }}}}e^{-{\frac {1}{2}}\left({\frac {x-\mu }{\sigma }}\right)^{2}} $$
+
+where $\pi \approx 3.14$ and $e \approx 2.718$.
+
+-   The cumulative distribution function (cdf) of X sums from negative infinity up to the value of $x_o$, which is $(-∞, x_o]$ in interval notation:
+
+$$ F(x_o) = P(X\leq x_o)={\frac {1}{\sigma {\sqrt {2\pi }}}} \int_{- \infty }^{x_o}e^{-{\frac {1}{2}}\left({\frac {x-\mu }{\sigma }}\right)^{2}}dx $$
+
+where $-\infty \leq x_o \leq + \infty$
+
+Let's say that in a population the random variable of height, X, for adult people approximates a normal distribution with a mean $\mu$ = 170cm and a standard deviation $\sigma$ = 10 cm.
+
+The pdf for this distribution is shown below:
+
+```{r}
+ggplot() +
+  geom_function(fun = dnorm, args = list(mean = 170, sd = 10), 
+                color= "gray20", linewidth = 1) +
+  xlim(135, 205) +
+  labs(x = "X", y = "Probabiblity Density, f(x)",
+       title = "The Normal Distribution, N~(170, 10^2)") +
+  scale_y_continuous(expand = c(0,0)) +
+  theme_classic(base_size = 14)
+```
+
+The normal cumulative distribution function (cdf) is shown below.
+
+Note that continuous variables generate a smooth curve, while discrete variables produce a stepped line plot.
+
+```{r}
+# Create a data frame
+dat7 <- data.frame(x = seq(135, 205, by = 0.1), 
+                   y = pnorm(seq(135, 205, by = 0.1), mean=170, sd=10))
+# Plot
+ggplot(dat7, aes(x=x, y=y)) +
+  geom_step() +
+  labs(x = "X", y = "Cumulative Probabiblity, F(x)") +
+  scale_y_continuous(expand = c(0,0)) +
+  theme_classic(base_size = 14)
+```
+
+Let's assume that we want to calculate the area under the curve between 160 cm and 180 cm, that is:
+
+$$ P(160\leq X \leq 180)=\int_{160}^{180}f(x)dx $$
+
+```{r}
+# Create a data frame
+df2 <- data.frame(x = seq(135, 205, by = 0.1),
+                   y = dnorm(seq(135, 205, by = 0.1), mean=170, sd=10))
+
+# Create the plot
+ggplot(df2, aes(x = x, y = y)) +
+  geom_function(fun = dnorm, args = list(mean = 170, sd = 10), 
+                color= "gray20", linewidth = 1) +
+  geom_area(mapping = aes(x = ifelse(x > 160 & x < 180, x, 0)), fill = "#0073CF", alpha = 0.4) +  # Area under the curve
+  xlim(135, 205) +
+  labs(x ="x", y = "Probability density",
+       title = "Area Under the Normal Distribution Curve") +
+  scale_y_continuous(expand = c(0,0)) +
+  theme_classic(base_size = 14)
+```
+
+Using the properties of integrals we have:
+
+$$ \int_{-\infty}^{180}f(x)dx = \int_{-\infty}^{160}f(x)dx + \int_{160}^{180}f(x)dx $$ $$ \Leftrightarrow \int_{160}^{180}f(x)dx = \int_{-\infty}^{180}f(x)dx - \int_{-\infty}^{160}f(x)dx $$ $$ \Leftrightarrow P(160\leq X \leq 180) = P(X \leq 180)- P(X \leq 160) $$
+
+-   Lets calculate the $P(X \leq 180)$:
+
+$$ P(X \leq 180)=\int_{-\infty}^{180}f(x)dx $$
+
+```{r}
+# Create the plot
+ggplot(df2, aes(x = x, y = y)) +
+  geom_function(fun = dnorm, args = list(mean = 170, sd = 10), 
+                color= "gray20", linewidth = 1) +
+  geom_area(mapping = aes(x = ifelse(x > 135 & x < 180, x, 0)), fill = "#0073CF", alpha = 0.4) +  # Area under the curve
+  xlim(135, 200) +
+  labs(x = "X", y = "Probability density",
+       title = "Area Under the Normal Distribution Curve") +
+  scale_y_continuous(expand = c(0,0)) +
+  theme_classic(base_size = 14)pnorm(180, mean = 170, sd = 10)
+```
+
+```{r}
+pnorm(180, mean = 170, sd = 10)
+```
+
+-   Similarly, we can calculate the $P(X \leq 160)$:
+
+$$ P(X \leq 160)=\int_{-\infty}^{160}f(x)dx $$
+
+```{r}
+# Create the plot
+ggplot(df2, aes(x = x, y = y)) +
+  geom_function(fun = dnorm, args = list(mean = 170, sd = 10), 
+                color= "gray20", linewidth = 1) +
+  geom_area(mapping = aes(x = ifelse(x > 135 & x < 160, x, 0)), fill = "#0073CF", alpha = 0.3) +  # Area under the curve
+  xlim(135, 200) +
+  labs(x = "X", y = "Probability density",
+       title = "Area Under the Normal Distribution Curve") +
+  scale_y_continuous(expand = c(0,0)) +
+  theme_classic(base_size = 14)
+```
+
+```{r}
+pnorm(160, mean = 170, sd = 10)
+```
+
+Finally, we subtract the two values:
+
+```{r}
+pnorm(180, mean = 170, sd = 10) - pnorm(160, mean = 170, sd = 10)
+```
+
+## 14.4.3 Standard Normal distribution
+
+If X is a random variable with a normal distribution having a mean of $\mu$ and a standard deviation of $\sigma$, then the standardized Normal deviate can be expressed as:
+
+$$ z= \frac{x-\mu}{\sigma} $$ {#eq-z}
+
+The z (often called z-score) is a random variable that has a Standard Normal distribution, also called a z-distribution, i.e. a special normal distribution where $\mu=0$ and $\sigma^2=1$. In this case, the gaussian equation is transformed as follows:
+
+$$ f(z)={\frac {1}{{\sqrt {2\pi }}}}e^{-{\frac {1}{2}}z^2} $$
+
+```{r}
+ggplot() +
+  stat_function(fun = dnorm, args = list(mean = 0, sd = 1)) +
+  scale_x_continuous(limits = c(-3, 3), breaks = seq(-3, 3, 1)) +
+  labs(x = "Z", y = "Probabiblity density, f(z)",
+       title = "The Standard Normal Distribution, N~(0, 1^2)") +
+  scale_y_continuous(expand = c(0,0.005)) +
+  theme_classic(base_size = 14)
+```
+
+Let's assume that the diastolic blood pressure distribution among men has a normal distribution with mean 80 mmHg and standard deviation 15 mmHg. If an individual's diastolic blood pressure is recorded as 110 mmHg, how many standard deviations differs from the population mean?
+
+The z-score equation is:
+
+$z = \frac{(110 – 80)}{15} = 2$
+
+This person has a diastolic blood pressure that is 2 standard deviations above the population mean.
+
+To find the area under the curve between two z-scores, $z_1$ and $z_2$, we have to integrate the pdf equation as follows:
+
+$$ P(z_1\leq Z\leq z_2)={\frac {1}{{\sqrt {2\pi }}}}\int_{z_1}^{z_2}e^{-{\frac {1}{2}}z^2}dz $$
+
+Let's calculate the area under the curve for $z_1=0$ and $z_2=2$:
+
+```{r}
+# Create a data frame
+df3 <- data.frame(x = seq(-3, 3, by = 0.01),
+                   y = dnorm(seq(-3, 3, by = 0.01), mean=0, sd=1))
+
+ggplot(df3, aes(x = x, y = y)) +
+  stat_function(fun = dnorm, args = list(mean = 0, sd = 1)) +
+  geom_area(mapping = aes(x = ifelse(x > 0 & x < 2, x, 0)), fill = "#0073CF", alpha = 0.3) +  # Area under the curve
+  scale_x_continuous(limits = c(-3, 3), breaks = seq(-3, 3, 1)) +
+  labs(x = "Z", y = "Probabiblity density, f(z)",
+       title = "The Standard Normal Distribution, N~(0, 1^2)") +
+  scale_y_continuous(expand = c(0,0)) +
+  theme_classic(base_size = 14)
+```
+
+In R, we can easily calculate the above area using the cdf of the normal distribution:
+
+$$P(0\leq Z\leq 2) = P(Z\leq 2) - P(Z\leq 0)$$
+
+```{r}
+pnorm(2, mean = 0, sd = 1) - pnorm(0, mean = 0, sd = 1)
+```
+
+## 14.4.4 Chi-square distribution
+
+The chi-square distribution arises in various contexts, such as the chi-square test for independence.
+
+Let $Z_1, Z_2,..., Z_{\nu}$ be independent random variables that follow the standard normal distribution N(0,1). Then, the sum of the squares of these standard normal random variables, $U=\sum_{i=1}^n Z_i^2$, follows the chi-squared distribution with $\nu$ degrees of freedom, $U \sim\chi_\nu^2$.
+
+Therefore, the chi-squared distribution is determined by a single parameter, $\nu$, which specifies the degrees of freedom (the number of random variables Z being summed). For example, the square of a standard normal variable follows the chi-square distribution with one degree of freedom, $U = Z_{1}^2 \sim \chi_1^2$.
+
+The mean and variance of a random variable that follows the chi-square distribution with $\nu$ degrees of freedom are:
+
+-   $μ = \nu$
+-   $σ^2 = 2\nu$
+
+The shape of the chi-square distribution depends on the degrees of freedom, $\nu$.
+
+```{r}
+ggplot(data = data.frame(x = c(0, 20)), aes(x = x)) +
+  stat_function(fun = function(x) dchisq(x, df = 3), aes(color = "Chi-square (df = 3)"), size = 0.8) +
+  stat_function(fun = function(x) dchisq(x, df = 5), aes(color = "Chi-square (df = 5)"), size = 0.8) +
+  stat_function(fun = function(x) dchisq(x, df = 9), aes(color = "Chi-square (df = 9)"), size = 0.8) +
+  scale_x_continuous(limits = c(0, 20), breaks = seq(0, 20, 1)) +
+  scale_color_manual(values = c("purple", "orange", "cyan"),
+                     labels = c("ν = 3", "ν = 5", "ν = 9")) +
+  labs(x = "Chi-square", y = "Probability Density") +
+  scale_y_continuous(expand = c(0,0)) +
+  theme_classic(base_size = 14) +
+  theme(legend.title = element_blank())
+```
+
+**NOTE:** When $\nu$ is large, the shape of the chi-square distribution becomes increasingly similar to that of a normal distribution.
+
+## 14.4.5 t-distribution
+
+The t-distribution, also known as the Student's t-distribution, is very similar to standard normal distribution and is used in statistics when the sample size is small or when the population standard deviation is unknown.
+
+The Student's t statistic is defined from the formula:
+
+$$ T = \frac{Z}{\sqrt\frac{{U}}{\nu}} $$
+
+where Z∼N(0,1) and U∼$\chi_\nu^2$ are independent.
+
+The t statistic follows the t-distribution with $\nu$ degrees of freedom. As the degrees of freedom increase ($\nu$\> 30), the t-distribution approaches the normal distribution more closely.
+
+The mean and variance of a random variable that follows the t-distribution with $\nu$ degrees of freedom are:
+
+-   $\mu= 0$, $\nu \geq 2$
+-   $σ^2 = \nu/(\nu −2)$ , $\nu \geq 3$
+
+The shape of the t-distribution depends on the degrees of freedom, $\nu$
+
+```{r}
+ggplot(data = data.frame(x = c(-5, 5)), aes(x = x)) +
+  stat_function(fun = dnorm, args = list(mean = 0, sd = 1), aes(color = "a"), size = 0.8) +
+  stat_function(fun = function(x) dt(x, df = 3), aes(color = "b = 3"), size = 0.8) +
+  stat_function(fun = function(x) dt(x, df = 5), aes(color = "c = 5"), size = 0.8) +
+  stat_function(fun = function(x) dt(x, df = 9), aes(color = "d = 9"), size = 0.8) +
+  scale_x_continuous(limits = c(-5, 5), breaks = seq(-5, 5, 1)) +
+  scale_color_manual(values = c("black", "purple", "orange", "cyan"),
+                     labels = c("Standard Normal", "ν = 3", "ν = 5", "ν = 9")) +
+  labs(x = "t", y = "Probabiblity Density") +
+  scale_y_continuous(expand = c(0,0)) +
+  theme_classic(base_size = 14) +
+  theme(legend.title = element_blank())
+```
+
+Just like the standard normal distribution, the probability density curve of a t-distribution is bell-shaped and symmetric around its mean (μ = 0). However, the probability density curve of the t-distribution decreases more slowly than that of the standard normal distribution (t-distribution has "heavier" tails than the standard normal distribution).
+
+If the area of the curve is known, it is possible to calculate the corresponding t-value. For example, if each of the shaded light blue areas equal to 0.025, we can find the t-value using the `qt()` function in R:
+
+```{r}
+# Create a data frame
+df4 <- data.frame(x = seq(-5, 5, by = 0.01),
+                  y = dt(seq(-5, 5, by = 0.01), df = 3))
+
+ggplot() +
+  stat_function(fun = dnorm, args = list(mean = 0, sd = 1)) +
+  stat_function(fun = dt, args = list(df = 3), color  = "purple") +
+  geom_area(data = df4, mapping = aes(x = ifelse(x < -3, x, -3), y = y), fill = "#0073CF", alpha = 0.3) +  # Area under the curve
+  geom_area(data = df4, mapping = aes(x = ifelse(x > 3, x, 3), y = y), fill = "#0073CF", alpha = 0.3) +  # Area under the curve
+  scale_x_continuous(limits = c(-5, 5), breaks = seq(-5, 5, 1)) +
+  annotate("text", x = 0, y = 0.41, label = "standard normal") +
+  annotate("text", x = 0, y = 0.38, label = "t(3)", color = "purple") +
+  labs(x = "t", y = "Probabiblity Density") +
+  scale_y_continuous(expand = c(0,0)) +
+  theme_classic(base_size = 14)
+```
+
+```{r}
+qt(0.025, df = 3)
+```
+
+```{r}
+qt(0.975, df = 3)
+```
+
+## 14.4.6 F-distribution
+
+Let U and V be independent random variables that follow the $\chi_{\nu_1}^2$ and $\chi_{\nu_2}^2$, respectively. Then, the random variable:
+
+$$F = \frac{U / \nu_1}{V / \nu_2} $$
+
+follows the F-distribution with $\nu_1$ and $\nu_2$ degrees of freedom, $F \sim F_{\nu_1, \nu_2}$.
+
+The shape of an F-distribution depends on the values of $\nu_1$ and $\nu_2$, the numerator and denominator degrees of freedom, respectively:
+
+```{r}
+ggplot(data = data.frame(x = c(0, 5)), aes(x = x)) +
+  stat_function(fun = function(x) df(x, df1 = 2, df2 = 1), aes(color = "v1 = 2, v2 = 1"), size = 0.8) +
+  stat_function(fun = function(x) df(x, df1 = 3, df2 = 5), aes(color = "v1 = 3, v2 = 5"), size = 0.8) +
+  stat_function(fun = function(x) df(x, df1 = 10, df2 = 8), aes(color = "v1 = 10, v2 = 8"), size = 0.8) +
+  scale_x_continuous(limits = c(0, 5), breaks = seq(0, 5, 1)) +
+  scale_color_manual(values = c("purple", "orange", "cyan"),
+                     labels = c("v1 = 2, v2 = 1", "v1 = 3, v2 = 5", "v1 = 10, v2 = 8")) +
+  labs(x = "F", y = "Probability Density") +
+  scale_y_continuous(expand = c(0,0)) +
+  theme_classic(base_size = 14) +
+  theme(legend.title = element_blank())
+```
+
+The mean and variance of a random variable that follows the F-distribution with $\nu_1$ and $\nu_2$ degrees of freedom are:
+
+-   $\mu = \frac{\nu_2}{\nu_2 - 2}$
+
+-   $\sigma^2 = \frac{2 \nu_2^2 (\nu_1 + \nu_2 - 2)}{\nu_1 (\nu_2 - 2)^2 (\nu_2 - 4)}$
