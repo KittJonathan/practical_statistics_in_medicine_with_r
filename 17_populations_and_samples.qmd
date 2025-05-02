@@ -1,0 +1,238 @@
+---
+title: "Populations and samples"
+format: html
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+library(tagger)
+```
+
+# 17.1 Population, sample, and point estimation
+
+## 17.1.1 Population and parameters
+
+A population refers to a theoretical concept representing the complete collection of individuals sharing specific defining characteristics.
+
+The population mean and variance of random variables of populations are typically not directly observable and are denoted as **parameters**.
+
+## 17.1.2 Sample and sample statistics
+
+We analyze a **sample**, a subset of the population intended to be representative. A **sample statistic** such as the sample mean can serve as an estimator for the population mean.
+
+## 17.1.3 Error in the estimate
+
+$$
+total\ error=bias\ +\ sampling\ error
+$$
+
+-   **Bias** refers to a tendency to overestimate or underestimate the true value of the population parameter.
+
+-   **Sampling error** measures the extent to which an estimate tends to vary from one sample to another due to random chance.
+
+# 17.2 Sampling distribution
+
+## 17.2.1 What is a sampling distribution?
+
+The sampling distribution is a theoretical probability distribution that represents the possible values of a sample statistics, such as the sample mean, obtained from all possible samples of a specific size drawn from a population.
+
+| Parameter          | Population | Sample         | Sampling distribution of mean |
+|--------------------|------------|----------------|-------------------------------|
+| Mean               | $\mu$      | $\bar{\mu}$    | $\mu_\bar{x}$                 |
+| Standard deviation | $\sigma$   | $\bar{\sigma}$ | $\sigma_\bar{x}$              |
+
+## 17.2.2 Standard error of the mean (SEM)
+
+The standard error of the sampling distribution is known as the standard error (SE).
+
+The standard error of the mean (SEM) is the population $\sigma$ divided by the square root of the sample size $n$:
+
+$$
+\sigma_\bar{x}=\frac{\sigma}{\sqrt{n}}
+$$
+
+We usually do not know the population parameter $\sigma$, therefore we use the sample standard deviation s, as it is an estimator of the population standard deviation.
+
+$$
+SE_\bar{x}=\frac{s}{\sqrt{n}}
+$$
+
+The Standard Error of the Mean (SEM) is a metric that describes the variability of sample means within the sampling distribution. In practice, it provides insight into the uncertainty associated with estimating the population mean when working with a sample, particularly when the sample size is small.
+
+The standard error is essential in constructing confidence intervals around point estimates, a process known as interval estimation.
+
+The CD4 count of a sample of 64 healthy individuals has a mean of 850 $counts/mm^3$ with a standard deviation of 240 $counts/mm^3$. The standard error for this population is calculated as follows:
+
+$$
+SE_\bar{x}=\frac{s}{\sqrt{n}}=\frac{240}{\sqrt{64}}=\frac{240}{8}=30\ counts/mm^3
+$$
+
+The SEM provides a measure of the precision of our estimate of the population mean CD4 counts. If we were to repeat the sampling process numerous times and calculate the mean CD4 count each time, we would expect the calculated means to vary around the population mean by approximately 30 $counts/mm^3$.
+
+```{r}
+sem <- 240 / sqrt(64)
+sem
+```
+
+## 17.2.3 Properties of the distribution of sample means
+
+Consider a population of 100,000 adults, characterized by a mean blood pressure (BP) of μ = 126 mmHg and a standard deviation of σ = 10. Now, imagine that the distribution of their BP reveals an intriguing bimodal pattern:
+
+```{r}
+set.seed(46)
+
+# Create a non-uniform population of 100,000 numbers between 1 and 100
+# Create a non-uniform population of 100,000 numbers between 1 and 100
+pop1 <- rnorm(70000, mean = 120, sd = 3)
+pop2 <- rnorm(30000, mean = 140, sd = 6)
+pop <- c(pop1, pop2)
+
+mu <- mean(pop) #calculate the population mean
+sigma <- sd(pop) #calculate the population standard deviation
+
+popdf <- as.data.frame(pop)
+
+ggplot(popdf, aes(x = pop)) + geom_histogram(color = "black", fill = "#894ae0", alpha=0.3) + 
+  geom_vline(xintercept = mu, linetype = "dashed", linewidth = 0.8) +
+  theme_classic() +
+  ggtitle("Histogram of Population") + xlab("x") +
+  theme(axis.title = element_text(hjust = 1))
+```
+
+Let's consider sampling five individuals from the population and calculating their sample mean BP, denoted as $\bar{x_1}$. Next, let's repeat this process by collecting a second sample of five individuals and calculating the sample mean again, which we might denote as $\bar{x_2}$. This process can be iterated 100 times ($N = 100$) and generate the histogram of the sample means. Next, we run this simulation a bunch of times with different sample size 10, 30, 50, 100:
+
+```{r}
+n <- c(5, 10, 30, 50, 100) #set up number of samples
+t <- c(100) #set up number of trials in simulation
+
+df <- data.frame() #initialize our empty data frame
+
+# Run the simulation
+for(i in n) { #for each value of n...
+  col <- c()
+  for(j in t) { #we loop through each value of t...
+    trial <- 1:j
+    counter <- j #set up an egg timer based on whichever t value we're on
+    value <- c()
+    while(counter > 0) {    # and extract n samples from the population...
+      bucket <- sample(pop, i, replace = TRUE)
+      xbar <- mean(bucket) #calculate the mean...
+      value <- c(value, xbar) # and add it to a vector
+      counter <- counter - 1 #egg timer counts down and loops back until it hits 0
+    }
+    sbar <- sd(value) #calculate the standard deviation of our sample
+    col <- cbind(trial, value, sbar, i, j) #stick all the info together...
+    df <- rbind(df, col) #and attach it to our master data frame
+  } #and we do it again for the next set of values until we're done!
+  
+}
+
+rm(col, bucket, value, counter, i, j, n, sbar, t, xbar, trial) #clean up
+names(df) <- c("trial#", "value", "sdev", "sample_size", "No.samples")
+
+df2 <- df |> 
+  mutate(sample_size = factor(sample_size)) |> 
+  group_by(sample_size) |> 
+  summarize(my_mean = mean(value))
+
+# We tidy up our data frame to get it ready for graphing. Note that we built it in "tall"
+# form so it's already structured for ggplot
+
+
+# Creating the plot
+ggplot(df, aes(x = value)) + 
+  geom_histogram(fill = "steelblue", binwidth = 0.8) + 
+  #ggtitle("Demonstrating The Central Limit Theorem With Simulation") +
+  geom_vline(data = df2, aes(xintercept = my_mean), color = "yellow", linetype = "dashed", linewidth = 0.8) +
+  geom_vline(xintercept = mu, linetype = "dashed", color = "gray30", linewidth = 0.7) +
+  xlab(expression(bar(x))) +
+  theme(axis.title = element_text(hjust = 1),
+        legend.position = "none") +
+  facet_grid(sample_size ~ No.samples, scales="free_y", labeller = label_both) +
+  tag_facets()
+```
+
+Properties of the distribution of sample means:
+
+-   As the sample size increases, the mean of a large number of sample means converges to the population mean. This property is known as the **law of large numbers**.
+
+-   The standard error of the mean (SEM) decreases as the sample size increases.
+
+-   As the sample size increases, the distribution of sample means tends to approximate a **normal** distribution.
+
+# 17.3 Central limit theorem (CLM) for sample means
+
+The **Central Limit Theorem** (CLM) for sample means in statistics states that, given a sufficiently large sample size, the sampling distribution of the mean for a variable will approximate a normal distribution **regardless** of the variable's underlying distribution of the population observations: $\overline{X} \sim N(\mu, \sigma^2/n)$.
+
+*NOTE: The CLM can be applied in inferential statistics for various test statistics, such as difference in means, difference in proportions, and the slope of a linear regression model, under the assumption of large samples and the absence of extreme skewness.*
+
+To illustrate this, let's generate some data from a continuous uniform distribution (100,000 observations):
+
+```{r}
+set.seed(46)
+
+#get data from uniform distribution
+pop2 <- runif(100000, min = 0, max = 1)
+
+mu2 <- mean(pop2) #calculate the population mean
+sigma2 <- sd(pop2) #calculate the population standard deviation
+
+popdf2 <- as.data.frame(pop2)
+
+ggplot(popdf2, aes(x = pop2)) + 
+  geom_histogram(color='black', fill = "#894ae0", 
+                 alpha=0.3, binwidth = 0.1, boundary = 0) +
+  geom_vline(xintercept = mu2, linetype = "dashed", linewidth = 1.2) +
+  theme_classic() +
+  ggtitle("Destribution of Simulated data for Population") +
+  xlab("x") +
+  scale_x_continuous(breaks = seq(0, 1, by = 0.1)) + 
+  theme(axis.title = element_text(hjust = 1))
+```
+
+We can consider the data we've just created above as the entire population (N=100,000) from which we can sample. We sample a bunch of times with different number of samples (50, 70, 100) and simple sizes (5, 10, 30) and we generate the histograms of the sample means.
+
+```{r}
+n <- c(5, 10, 30) #set up number of samples
+t <- c(50, 70, 100) #set up number of trials in simulation
+
+df4 <- data.frame() #initialize our empty data frame
+
+# Run the simulation
+for(i in n) { #for each value of n...
+  col <- c()
+  for(j in t) { #we loop through each value of t...
+    trial <- 1:j
+    counter <- j #set up an egg timer based on whichever t value we're on
+    value <- c()
+    while(counter > 0) {    # and extract n samples from the population...
+      bucket <- sample(pop2, i, replace = TRUE)
+      xbar <- mean(bucket) #calculate the mean...
+      value <- c(value, xbar) # and add it to a vector
+      counter <- counter - 1 #egg timer counts down and loops back until it hits 0
+    }
+    sbar <- sd(value) #calculate the standard deviation of our sample
+    col <- cbind(trial, value, sbar, i, j) #stick all the info together...
+    df4 <- rbind(df4, col) #and attach it to our master data frame
+  } #and we do it again for the next set of values until we're done!
+  
+}
+
+rm(col, bucket, value, counter, i, j, n, sbar, t, xbar, trial) #clean up
+names(df4) <- c("trial#", "value", "sdev", "sample_size", "No.samples")
+
+# We tidy up our data frame to get it ready for graphing. Note that we built it in "tall"
+# form so it's already structured for ggplot
+
+# Creating the plot
+ggplot(df4, aes(x = value)) + 
+  geom_histogram(fill = "steelblue", binwidth = 0.06) + 
+  #ggtitle("Demonstrating The Central Limit Theorem With Simulation") +  
+  #geom_vline(data = df5, aes(xintercept = my_mean), color = "red", linetype = "dashed", linewidth = 0.7) +
+  geom_vline(xintercept = mu2, linetype = "dashed", color = "gray30", linewidth = 0.7) +
+  xlab(expression(bar(x))) +
+  theme(axis.title = element_text(hjust = 1)) +
+  facet_grid(sample_size ~ No.samples, scales="free_y", labeller = label_both) +
+  tag_facets()
+```
